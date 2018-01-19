@@ -8,7 +8,10 @@ Pod::Spec.new do |s|
   s.license       = { type: "MIT", file: "LICENSE" }
   s.author        = "bcylin"
 
-  s.platform      = :ios, "8.0"
+  s.platform          = :ios, "8.0"
+  s.swift_version     = "4.0"
+  s.static_framework  = true
+
   s.source        = { git: "https://github.com/bcylin/QuickTableViewController.git", tag: "v#{s.version}" }
   s.source_files  = "Source/**/*.swift"
   s.requires_arc  = true
