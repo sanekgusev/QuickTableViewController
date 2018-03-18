@@ -27,51 +27,47 @@
 import UIKit
 
 /// A struct that represents the image used in a row.
-public struct Icon: Equatable {
+public enum Icon: Equatable {
+
+  case named(String)
+  case image(UIImage)
+  case images(normal: UIImage, highlighted: UIImage)
 
   /// The image of the normal state.
   public var image: UIImage? {
-    return _image ?? imageName.flatMap(UIImage.init(named:))
+    switch self {
+    case let .named(name):
+      return UIImage(named: name)
+    case let .image(image):
+      return image
+    case let .images(normal: image, highlighted: _):
+      return image
+    }
   }
 
   /// The image of the highlighted state.
   public var highlightedImage: UIImage? {
-    return
-      _highlightedImage ??
-      (!highlightedImageName.isEmpty ? UIImage(named: highlightedImageName) : nil)
-  }
-
-  fileprivate var _image: UIImage?
-  fileprivate var _highlightedImage: UIImage?
-
-  public private(set) var imageName: String?
-  public var highlightedImageName: String {
-    if let name = imageName {
-      return name + "-highlighted"
-    } else {
-      return ""
+    switch self {
+    case let .named(name):
+      return UIImage(named: name + "-highlighted")
+    case .image:
+      return nil
+    case let .images(normal: _, highlighted: image):
+      return image
     }
-  }
-
-  /// Initializes an icon with an image name.
-  public init(imageName: String) {
-    self.imageName = imageName
-  }
-
-  /// Initializes an icon with images for the normal and highlighted states.
-  public init(image: UIImage, highlightedImage: UIImage? = nil) {
-    _image = image
-    _highlightedImage = highlightedImage
   }
 
   // MARK: Equatable
 
-  /// Returns true iff `lhs` and `rhs` have equal images, highlighted images and image names.
+  /// Returns true iff `lhs` and `rhs` have equal images and highlighted images.
   public static func == (lhs: Icon, rhs: Icon) -> Bool {
-    if let lhsName = lhs.imageName, let rhsName = rhs.imageName {
-      return lhsName == rhsName
-    } else {
-      return lhs._image == rhs._image && lhs._highlightedImage == rhs._highlightedImage
+    switch (lhs, rhs) {
+    case let (.named(left), .named(right)):
+      return left == right
+    default:
+      return
+        lhs.image == rhs.image &&
+        lhs.highlightedImage == rhs.highlightedImage
     }
   }
 
